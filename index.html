@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Seus estilos CSS originais permanecem idênticos */
+    /* Configuração para congelar a tela e evitar barra de rolagem */
     html, body { height: 100%; overflow: hidden; background-color: #f1f5f9; font-family: 'Inter', sans-serif; color: #334155; -webkit-font-smoothing: antialiased; }
     .app-container { height: 100vh; display: flex; flex-direction: column; padding: 12px; }
     .main-header { background: linear-gradient(135deg, #1e3a1e 0%, #2d5a1e 100%); color: white; padding: 10px 16px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 12px; flex-shrink: 0; }
@@ -131,12 +131,19 @@
   </div>
 
   <script>
-    // 🔴 URL DE IMPLANTAÇÃO CONFIGURADA E TESTADA
+    // URL oficial de implantação ativa do seu Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycby9jditn3Gz8g0Dy2G7Sz0xuawAsD-ujwWuJdH-tpZD/exec";
 
     async function carregarMenu() {
       try {
-        const response = await fetch(API_URL);
+        // Nova configuração livre de erro de CORS: usando apenas o redirect padrão
+        const response = await fetch(API_URL, { 
+          method: "GET",
+          redirect: "follow" 
+        });
+        
+        if (!response.ok) throw new Error("Erro na requisição à API");
+        
         const data = await response.json();
 
         // 1. Configurar botão mobilização
@@ -146,26 +153,26 @@
           btnMob.style.display = 'inline-block';
         }
 
-        // Helper para limpar containers
+        // Helper para limpar e preparar os containers de listas
         const limparEObter = (id) => {
           const el = document.getElementById(id);
           el.innerHTML = '';
           return el;
         };
 
-        // 2. Renderizar Documentos
+        // 2. Renderizar Documentos Gerais
         const containerDocs = limparEObter('lista-documentos');
         data.documentos.forEach(doc => {
           containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
         });
 
-        // 3. Renderizar Vídeos
+        // 3. Renderizar Vídeos de Apoio
         const containerVideos = limparEObter('lista-videos');
         data.videos.forEach(vid => {
           containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
         });
 
-        // 4. Renderizar Links Úteis (Com os filtros originais)
+        // 4. Renderizar Links Úteis
         const containerLinks = limparEObter('lista-links-uteis');
         data.linksUteis.forEach(link => {
           const textoLink = link.text.trim();
@@ -174,7 +181,7 @@
           }
         });
 
-        // 5. Renderizar Pedido de Documentos (Com a estilização condicional original)
+        // 5. Renderizar Pedido de Documentos
         const containerPedidos = limparEObter('lista-pedidos');
         data.pedidosPrm.forEach(pedido => {
           const texto = pedido.text.trim();
@@ -205,15 +212,15 @@
       } catch (error) {
         console.error("Erro ao carregar dados da planilha:", error);
         
-        // Substituído o alert antigo por um aviso visual amigável nas próprias colunas
+        // Exibe o erro de forma limpa diretamente nos cards visuais
         document.querySelectorAll('.loading').forEach(el => {
-          el.textContent = "Não foi possível carregar os dados atualizados.";
+          el.textContent = "Erro ao carregar dados atualizados.";
           el.style.color = "#dc2626";
         });
       }
     }
 
-    // Inicializa a busca de dados assim que a página abre
+    // Inicializa o script após o carregamento da estrutura
     window.addEventListener('DOMContentLoaded', carregarMenu);
   </script>
 </body>
