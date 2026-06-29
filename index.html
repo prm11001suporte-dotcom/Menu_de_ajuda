@@ -17,7 +17,7 @@
       -webkit-font-smoothing: antialiased; 
     }
 
-    /* COMPUTADOR (Telas Grandes): Mantém tudo fixo e sem barra de rolagem geral, idêntico ao original */
+    /* COMPUTADOR (Telas Grandes): Mantém tudo fixo e sem barra de rolagem geral */
     @media (min-width: 992px) {
       body { overflow: hidden; }
       .app-container { height: 100vh; display: flex; flex-direction: column; padding: 12px; }
@@ -156,6 +156,7 @@
   </div>
 
   <script>
+    // NOVA URL DE IMPLANTAÇÃO CORRETA ATUALIZADA:
     const API_URL = "https://script.google.com/macros/s/AKfycbxusfeBsjnuRtivUXAJRgqgQLWSV5wNO1BsFms12n6pzXHqI_0vn7h2spaPuollK-eGXg/exec";
 
     async function carregarMenu() {
@@ -172,70 +173,80 @@
         // 1. Configurar botão mobilização
         if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
           const btnMob = document.getElementById('btn-mobilizacao');
-          btnMob.href = data.urlMobilizacao;
-          btnMob.style.display = 'inline-block';
+          if (btnMob) {
+            btnMob.href = data.urlMobilizacao;
+            btnMob.style.display = 'inline-block';
+          }
         }
 
         // Helper para limpar containers
         const limparEObter = (id) => {
           const el = document.getElementById(id);
-          el.innerHTML = '';
+          if (el) el.innerHTML = '';
           return el;
         };
 
         // 2. Renderizar Documentos
         const containerDocs = limparEObter('lista-documentos');
-        data.documentos.forEach(doc => {
-          containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
-        });
+        if (containerDocs && data.documentos) {
+          data.documentos.forEach(doc => {
+            containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
+          });
+        }
 
         // 3. Renderizar Vídeos
         const containerVideos = limparEObter('lista-videos');
-        data.videos.forEach(vid => {
-          containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
-        });
+        if (containerVideos && data.videos) {
+          data.videos.forEach(vid => {
+            containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
+          });
+        }
 
         // 4. Renderizar Links Úteis
         const containerLinks = limparEObter('lista-links-uteis');
-        data.linksUteis.forEach(link => {
-          const textoLink = link.text.trim();
-          if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
-            containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
-          }
-        });
+        if (containerLinks && data.linksUteis) {
+          data.linksUteis.forEach(link => {
+            const textoLink = link.text.trim();
+            if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
+              containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
+            }
+          });
+        }
 
         // 5. Renderizar Pedido de Documentos
         const containerPedidos = limparEObter('lista-pedidos');
-        data.pedidosPrm.forEach(pedido => {
-          const texto = pedido.text.trim();
-          if (texto === "Pedido de Documentos para o PRM") return;
+        if (containerPedidos && data.pedidosPrm) {
+          data.pedidosPrm.forEach(pedido => {
+            const texto = pedido.text.trim();
+            if (texto === "Pedido de Documentos para o PRM") return;
 
-          let estiloCustomizado = "";
-          if (texto.toUpperCase().includes("FORMULÁRIO")) {
-            estiloCustomizado = "color: #dc2626; font-weight: 600;";
-          } else if (texto.includes("Planilha de Consulta")) {
-            estiloCustomizado = "color: #2563eb; font-weight: 600;";
-          }
+            let estiloCustomizado = "";
+            if (texto.toUpperCase().includes("FORMULÁRIO")) {
+              estiloCustomizado = "color: #dc2626; font-weight: 600;";
+            } else if (texto.includes("Planilha de Consulta")) {
+              estiloCustomizado = "color: #2563eb; font-weight: 600;";
+            }
 
-          if (pedido.url !== "#" && pedido.url !== "") {
-            containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
-          } else {
-            containerPedidos.innerHTML += `<li><span style="font-size: 0.85rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
-          }
-        });
+            if (pedido.url !== "#" && pedido.url !== "") {
+              containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
+            } else {
+              containerPedidos.innerHTML += `<li><span style="font-size: 0.85rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
+            }
+          });
+        }
 
         // 6. Renderizar Avaliação
         const containerPesquisa = limparEObter('lista-pesquisa');
-        data.pesquisa.forEach(item => {
-          if (item.text.trim() !== "") {
-            containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
-          }
-        });
+        if (containerPesquisa && data.pesquisa) {
+          data.pesquisa.forEach(item => {
+            if (item.text.trim() !== "") {
+              containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
+            }
+          });
+        }
 
       } catch (error) {
         console.error("Erro ao carregar dados da planilha:", error);
-        
-        // Exibe o erro visualmente de maneira amigável nas caixas se falhar
         document.querySelectorAll('.loading').forEach(el => {
           el.textContent = "Erro ao carregar dados atualizados.";
           el.style.color = "#dc2626";
