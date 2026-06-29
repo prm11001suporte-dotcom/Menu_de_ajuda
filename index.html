@@ -156,12 +156,10 @@
   </div>
 
   <script>
-    // A sua URL limpa e oficial de comunicação direta (Livre de CORS)
-    const API_URL = "https://script.google.com/macros/s/AKfycbxQ_O8HDTG_f_wBcXNY-9-l9rMoqVNPbrlFZ10q_nk35NBY5hJNRup39tic53tt8LhvDg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby9jditn3Gz8g0Dy2G7Sz0xuawAsD-ujwWuJdH-tpZD/exec";
 
     async function carregarMenu() {
       try {
-        // Versão estável que funcionou: Puxa os dados apenas com o redirect padrão
         const response = await fetch(API_URL, { 
           method: "GET",
           redirect: "follow" 
@@ -214,10 +212,10 @@
           });
         }
 
-        // 5. Renderizar Pedido de Documentos
+        // 5. CORRIGIDO: Renderizar Pedido de Documentos percorrendo a lista correta (data.pedidosPrm)
         const containerPedidos = limparEObter('lista-pedidos');
         if (containerPedidos && data.pedidosPrm) {
-          containerPedidos.forEach(pedido => {
+          data.pedidosPrm.forEach(pedido => {
             const texto = pedido.text.trim();
             if (texto === "Pedido de Documentos para o PRM") return;
 
@@ -248,8 +246,6 @@
 
       } catch (error) {
         console.error("Erro ao carregar dados da planilha:", error);
-        
-        // Exibe o aviso vermelho se a rede ou o cache travar
         document.querySelectorAll('.loading').forEach(el => {
           el.textContent = "Erro ao carregar dados atualizados.";
           el.style.color = "#dc2626";
@@ -257,7 +253,6 @@
       }
     }
 
-    // Inicializa o script após o carregamento da estrutura
     window.addEventListener('DOMContentLoaded', carregarMenu);
   </script>
 </body>
