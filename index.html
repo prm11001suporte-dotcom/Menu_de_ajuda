@@ -17,7 +17,7 @@
       -webkit-font-smoothing: antialiased; 
     }
 
-    /* COMPUTADOR: Trava a tela e evita barra de rolagem geral */
+    /* COMPUTADOR (Telas Grandes): Mantém tudo fixo e sem barra de rolagem geral, idêntico ao original */
     @media (min-width: 992px) {
       body { overflow: hidden; }
       .app-container { height: 100vh; display: flex; flex-direction: column; padding: 12px; }
@@ -28,7 +28,7 @@
       .scroll-container { flex-grow: 1; overflow-y: auto; padding-right: 4px; }
     }
 
-    /* CELULAR E TABLET: Permite rolagem fluida e empilha os cards verticalmente */
+    /* CELULAR E TABLET (Telas Menores): Permite a rolagem nativa com o dedo de forma fluida */
     @media (max-width: 991.98px) {
       body { overflow-y: auto; }
       .app-container { height: auto; min-height: 100vh; display: flex; flex-direction: column; padding: 10px; }
@@ -36,10 +36,10 @@
       .row-full { height: auto; }
       .col-flex { gap: 10px; }
       .custom-card { margin-bottom: 10px; height: auto !important; }
-      .scroll-container { overflow-y: visible; } /* Expande o card e rola a tela inteira */
+      .scroll-container { overflow-y: visible; } /* Faz o card se esticar para não cortar conteúdo */
     }
 
-    /* Estilos Visuais dos Elementos */
+    /* Estilos Estéticos das Cores e Caixas */
     .main-header { background: linear-gradient(135deg, #1e3a1e 0%, #2d5a1e 100%); color: white; padding: 10px 16px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 12px; flex-shrink: 0; }
     .header-title { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
     .btn-mobilizacao { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; font-weight: 500; font-size: 0.85rem; padding: 5px 12px; border-radius: 6px; text-decoration: none; transition: all 0.2s ease; }
@@ -156,7 +156,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycby9jditn3Gz8g0Dy2G7Sz0xuawAsD-ujwWuJdH-tpZD/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxusfeBsjnuRtivUXAJRgqgQLWSV5wNO1BsFms12n6pzXHqI_0vn7h2spaPuollK-eGXg/exec";
 
     async function carregarMenu() {
       try {
@@ -172,80 +172,70 @@
         // 1. Configurar botão mobilização
         if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
           const btnMob = document.getElementById('btn-mobilizacao');
-          if (btnMob) {
-            btnMob.href = data.urlMobilizacao;
-            btnMob.style.display = 'inline-block';
-          }
+          btnMob.href = data.urlMobilizacao;
+          btnMob.style.display = 'inline-block';
         }
 
-        // Helper para limpar e preparar os containers de listas
+        // Helper para limpar containers
         const limparEObter = (id) => {
           const el = document.getElementById(id);
-          if (el) el.innerHTML = '';
+          el.innerHTML = '';
           return el;
         };
 
-        // 2. Renderizar Documentos Gerais
+        // 2. Renderizar Documentos
         const containerDocs = limparEObter('lista-documentos');
-        if (containerDocs && data.documentos) {
-          data.documentos.forEach(doc => {
-            containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
-          });
-        }
+        data.documentos.forEach(doc => {
+          containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
+        });
 
-        // 3. Renderizar Vídeos de Apoio
+        // 3. Renderizar Vídeos
         const containerVideos = limparEObter('lista-videos');
-        if (containerVideos && data.videos) {
-          data.videos.forEach(vid => {
-            containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
-          });
-        }
+        data.videos.forEach(vid => {
+          containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
+        });
 
         // 4. Renderizar Links Úteis
         const containerLinks = limparEObter('lista-links-uteis');
-        if (containerLinks && data.linksUteis) {
-          data.linksUteis.forEach(link => {
-            const textoLink = link.text.trim();
-            if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
-              containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
-            }
-          });
-        }
+        data.linksUteis.forEach(link => {
+          const textoLink = link.text.trim();
+          if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
+            containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
+          }
+        });
 
-        // 5. CORRIGIDO: Renderizar Pedido de Documentos percorrendo a lista correta (data.pedidosPrm)
+        // 5. Renderizar Pedido de Documentos
         const containerPedidos = limparEObter('lista-pedidos');
-        if (containerPedidos && data.pedidosPrm) {
-          data.pedidosPrm.forEach(pedido => {
-            const texto = pedido.text.trim();
-            if (texto === "Pedido de Documentos para o PRM") return;
+        data.pedidosPrm.forEach(pedido => {
+          const texto = pedido.text.trim();
+          if (texto === "Pedido de Documentos para o PRM") return;
 
-            let estiloCustomizado = "";
-            if (texto.toUpperCase().includes("FORMULÁRIO")) {
-              estiloCustomizado = "color: #dc2626; font-weight: 600;";
-            } else if (texto.includes("Planilha de Consulta")) {
-              estiloCustomizado = "color: #2563eb; font-weight: 600;";
-            }
+          let estiloCustomizado = "";
+          if (texto.toUpperCase().includes("FORMULÁRIO")) {
+            estiloCustomizado = "color: #dc2626; font-weight: 600;";
+          } else if (texto.includes("Planilha de Consulta")) {
+            estiloCustomizado = "color: #2563eb; font-weight: 600;";
+          }
 
-            if (pedido.url !== "#" && pedido.url !== "") {
-              containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
-            } else {
-              containerPedidos.innerHTML += `<li><span style="font-size: 0.85rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
-            }
-          });
-        }
+          if (pedido.url !== "#" && pedido.url !== "") {
+            containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
+          } else {
+            containerPedidos.innerHTML += `<li><span style="font-size: 0.85rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
+          }
+        });
 
         // 6. Renderizar Avaliação
         const containerPesquisa = limparEObter('lista-pesquisa');
-        if (containerPesquisa && data.pesquisa) {
-          data.pesquisa.forEach(item => {
-            if (item.text.trim() !== "") {
-              containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
-            }
-          });
-        }
+        data.pesquisa.forEach(item => {
+          if (item.text.trim() !== "") {
+            containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
+          }
+        });
 
       } catch (error) {
         console.error("Erro ao carregar dados da planilha:", error);
+        
+        // Exibe o erro visualmente de maneira amigável nas caixas se falhar
         document.querySelectorAll('.loading').forEach(el => {
           el.textContent = "Erro ao carregar dados atualizados.";
           el.style.color = "#dc2626";
