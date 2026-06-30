@@ -1,260 +1,276 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <base target="_top">
-  <title>Menu de Ajuda Digital</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<base target="_top">
+<title>Menu de Ajuda Digital</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    /* Configuração Base */
-    html, body { 
-      height: 100%; 
-      background-color: #f1f5f9; 
-      font-family: 'Inter', sans-serif; 
-      color: #334155; 
-      -webkit-font-smoothing: antialiased; 
-    }
+<style>
+/* Configuração Base com Imagem de Fundo */
+html, body {
+height: 100%;
+background-image: url('PRM11001 Imagem.jpg');
+background-size: 50%;
+background-position: center;
+background-repeat: no-repeat;
+background-color: #f1f5f9;
+font-family: 'Inter', sans-serif;
+color: #334155;
+-webkit-font-smoothing: antialiased;
+}
 
-    /* COMPUTADOR (Telas Grandes): Mantém tudo fixo e sem barra de rolagem geral */
-    @media (min-width: 992px) {
-      body { overflow: hidden; }
-      .app-container { height: 100vh; display: flex; flex-direction: column; padding: 12px; }
-      .content-area { flex-grow: 1; min-height: 0; }
-      .row-full { height: 100%; }
-      .card-h-100 { height: 100%; }
-      .card-h-flex { flex: 1; min-height: 0; }
-      .scroll-container { flex-grow: 1; overflow-y: auto; padding-right: 4px; }
-    }
+/* COMPUTADOR (Telas Grandes): Força tudo a caber em 1 página sem rolagens gerais */
+@media (min-width: 992px) {
+body { overflow: hidden; }
+.app-container { height: 100vh; display: flex; flex-direction: column; padding: 8px; }
+.content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
 
-    /* CELULAR E TABLET (Telas Menores): Permite a rolagem nativa com o dedo de forma fluida */
-    @media (max-width: 991.98px) {
-      body { overflow-y: auto; }
-      .app-container { height: auto; min-height: 100vh; display: flex; flex-direction: column; padding: 10px; }
-      .content-area { flex-grow: 1; }
-      .row-full { height: auto; }
-      .col-flex { gap: 10px; }
-      .custom-card { margin-bottom: 10px; height: auto !important; }
-      .scroll-container { overflow-y: visible; } /* Faz o card se esticar para não cortar conteúdo */
-    }
+/* Grade principal ocupa o espaço restante descontando o Suporte e Footer */
+.grid-principal { height: calc(100vh - 170px); min-height: 0; }
+.col-flex-dupla { display: flex; flex-direction: column; height: 100%; gap: 6px; }
+/* Faz cada cartão interno das colunas duplas ocupar exatamente metade do espaço */
+.card-metade { height: calc(50% - 3px) !important; min-height: 0; }
+.custom-card { height: 100%; }
+.scroll-container { flex-grow: 1; overflow-y: auto; padding-right: 2px; }
+}
 
-    /* Estilos Estéticos das Cores e Caixas */
-    .main-header { background: linear-gradient(135deg, #1e3a1e 0%, #2d5a1e 100%); color: white; padding: 10px 16px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 12px; flex-shrink: 0; }
-    .header-title { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
-    .btn-mobilizacao { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; font-weight: 500; font-size: 0.85rem; padding: 5px 12px; border-radius: 6px; text-decoration: none; transition: all 0.2s ease; }
-    .btn-mobilizacao:hover { background-color: #b30000; border-color: #b30000; color: white; }
-    
-    .custom-card { border: 1px solid rgba(0,0,0,0.05); border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; overflow: hidden; }
-    .bg-documentos { background-color: #ffffff; border-left: 5px solid #3b82f6; }
-    .bg-videos     { background-color: #fefcbf; border-left: 5px solid #eab308; }
-    .bg-links      { background-color: #f0fdf4; border-left: 5px solid #22c55e; }
-    .bg-pedidos    { background-color: #fef2f2; border-left: 5px solid #ef4444; }
-    .bg-suporte    { background-color: #f7fee7; border-left: 5px solid #84cc16; }
-    .bg-avaliacao  { background-color: #faf5ff; border-left: 5px solid #a855f7; }
-    
-    .card-title { font-weight: 700; font-size: 0.98rem; color: #1e293b; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 6px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    
-    .scroll-container::-webkit-scrollbar { width: 4px; }
-    .scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    
-    .lista-links { list-style: none; padding: 0; margin: 0; }
-    .lista-links li { padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
-    .lista-links li:last-child { border-bottom: none; }
-    .lista-links a { text-decoration: none; color: #475569; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 500; }
-    .lista-links a:hover { color: #000000; }
-    .icon-wrapper { color: #64748b; font-size: 0.9rem; }
-    .btn-whatsapp { background-color: #25d366; color: white; font-weight: 600; font-size: 0.85rem; border-radius: 6px; padding: 6px; text-align: center; text-decoration: none; display: block; margin-top: 4px; }
-    .btn-whatsapp:hover { color: white; opacity: 0.9; }
-    .suporte-tel { font-size: 0.78rem; color: #475569; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 6px; margin-top: 8px; }
-    .mini-footer { text-align: center; font-size: 0.75rem; color: #94a3b8; padding-top: 6px; flex-shrink: 0; }
-    .loading { text-align: center; padding: 20px; font-size: 0.9rem; color: #64748b; }
-  </style>
+/* CELULAR E TABLET (Telas Menores): Permite rolagem livre */
+@media (max-width: 991.98px) {
+body { overflow-y: auto; }
+.app-container { height: auto; min-height: 100vh; display: flex; flex-direction: column; padding: 10px; }
+.content-area { flex-grow: 1; }
+.grid-principal { height: auto; }
+.col-flex-dupla { gap: 10px; }
+.custom-card { margin-bottom: 10px; height: auto !important; }
+.scroll-container { overflow-y: visible; }
+}
+
+/* Estilos Estéticos */
+.main-header { background: linear-gradient(135deg, #1e3a1e 0%, #2d5a1e 100%); color: white; padding: 8px 14px; border-radius: 6px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 8px; flex-shrink: 0; }
+.header-title { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; }
+.btn-mobilizacao { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; font-weight: 500; font-size: 0.8rem;
+padding: 4px 10px; border-radius: 5px; text-decoration: none; transition: all 0.2s ease; }
+.btn-mobilizacao:hover { background-color: #b30000; border-color: #b30000; color: white; }
+
+/* Cartões com fundo modificado para 60% de transparência */
+.custom-card { border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column;
+overflow: hidden; backdrop-filter: blur(2px); }
+.bg-documentos { background-color: rgba(255, 255, 255, 0.4); border-left: 5px solid #3b82f6; }
+.bg-videos     { background-color: rgba(254, 252, 191, 0.4); border-left: 5px solid #eab308; }
+.bg-links      { background-color: rgba(240, 253, 244, 0.4); border-left: 5px solid #22c55e; }
+.bg-pedidos    { background-color: rgba(254, 242, 242, 0.4); border-left: 5px solid #ef4444; }
+.bg-suporte    { background-color: rgba(247, 254, 231, 0.4); border-left: 5px solid #84cc16; }
+.bg-avaliacao  { background-color: rgba(250, 245, 255, 0.4); border-left: 5px solid #a855f7; }
+
+.card-title { font-weight: 700; font-size: 0.92rem; color: #1e293b; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 4px; margin-bottom: 6px; display: flex; align-items: center;
+gap: 6px; flex-shrink: 0; }
+
+.scroll-container::-webkit-scrollbar { width: 4px; }
+.scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+/* Linhas com Cores Alternadas Cinza e Branco e padding reduzido */
+.lista-links { list-style: none; padding: 0; margin: 0; width: 100%; }
+.lista-links li { padding: 4px 6px; border-bottom: 1px solid rgba(0,0,0,0.02); border-radius: 4px; }
+.lista-links li:nth-child(odd) { background-color: rgba(255, 255, 255, 0.6); }
+.lista-links li:nth-child(even) { background-color: rgba(241, 245, 249, 0.6); }
+.lista-links li:last-child { border-bottom: none; }
+.lista-links a { text-decoration: none; color: #475569; display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 500; width: 100%; }
+.lista-links a:hover { color: #000000; }
+.icon-wrapper { color: #64748b; font-size: 0.85rem; }
+
+.btn-whatsapp { background-color: #25d366; color: white; font-weight: 600; font-size: 0.8rem; border-radius: 5px; padding: 6px 12px; text-align: center; text-decoration: none; display: inline-block; }
+.btn-whatsapp:hover { color: white; opacity: 0.9; }
+.suporte-tel { font-size: 0.8rem; color: #475569; background: rgba(255,255,255,0.7); padding: 6px 10px; border-radius: 5px; display: inline-block; border: 1px solid rgba(0,0,0,0.05); }
+.mini-footer { text-align: center; font-size: 0.7rem; color: #94a3b8; padding-top: 4px; flex-shrink: 0; }
+.loading { text-align: center; padding: 10px; font-size: 0.8rem; color: #64748b; background: transparent !important; }
+</style>
 </head>
 <body>
 
-  <div class="app-container">
-    <header class="main-header d-flex justify-content-between align-items-center">
-      <div class="header-title">Menu de Ajuda RECRUTAMENTO</div>
-      <div>
-        <a id="btn-mobilizacao" href="#" target="_blank" class="btn-mobilizacao" style="display:none;">
-          Menu de Ajuda Mobilização &rarr;
-        </a>
-      </div>
-    </header>
+<div class="app-container">
+<header class="main-header d-flex justify-content-between align-items-center">
+<div class="header-title">Menu de Ajuda RECRUTAMENTO</div>
+<div>
+<a id="btn-mobilizacao" href="#" target="_blank" class="btn-mobilizacao" style="display:none;">
+Menu de Ajuda Mobilização &rarr;
+</a>
+</div>
+</header>
 
-    <div class="content-area">
-      <div class="row row-full g-2">
+<div class="content-area">
+<div class="row grid-principal g-2">
+<div class="col-xl-4 col-lg-4 h-100">
+<div class="custom-card bg-documentos">
+<div class="card-title"><span>📁</span> Documentos Gerais</div>
+<div class="scroll-container">
+<ul class="lista-links" id="lista-documentos">
+<div class="loading">Carregando...</div>
+</ul>
+</div>
+</div>
+</div>
 
-        <div class="col-xl-4 col-lg-4 h-100">
-          <div class="custom-card card-h-100 bg-documentos">
-            <div class="card-title"><span>📁</span> Documentos Gerais</div>
-            <div class="scroll-container">
-              <ul class="lista-links" id="lista-documentos">
-                <div class="loading">Carregando...</div>
-              </ul>
-            </div>
-          </div>
-        </div>
+<div class="col-xl-4 col-lg-4 col-flex-dupla">
+<div class="custom-card card-metade bg-videos">
+<div class="card-title"><span>🎬</span> Vídeos de Apoio</div>
+<div class="scroll-container">
+<ul class="lista-links" id="lista-videos">
+<div class="loading">Carregando...</div>
+</ul>
+</div>
+</div>
 
-        <div class="col-xl-4 col-lg-4 h-100 col-flex">
-          <div class="custom-card card-h-flex bg-videos">
-            <div class="card-title"><span>🎬</span> Vídeos de Apoio</div>
-            <div class="scroll-container">
-              <ul class="lista-links" id="lista-videos">
-                <div class="loading">Carregando...</div>
-              </ul>
-            </div>
-          </div>
+<div class="custom-card card-metade bg-links">
+<div class="card-title"><span>🔗</span> Links Úteis</div>
+<div class="scroll-container">
+<ul class="lista-links" id="lista-links-uteis">
+<div class="loading">Carregando...</div>
+</ul>
+</div>
+</div>
+</div>
 
-          <div class="custom-card card-h-flex bg-links">
-            <div class="card-title"><span>🔗</span> Links Úteis</div>
-            <div class="scroll-container">
-              <ul class="lista-links" id="lista-links-uteis">
-                <div class="loading">Carregando...</div>
-              </ul>
-            </div>
-          </div>
-        </div>
+<div class="col-xl-4 col-lg-4 col-flex-dupla">
+<div class="custom-card card-metade bg-pedidos">
+<div class="card-title"><span>📩</span> Pedido de Documentos</div>
+<div class="scroll-container">
+<ul class="lista-links" id="lista-pedidos">
+<div class="loading">Carregando...</div>
+</ul>
+</div>
+</div>
 
-        <div class="col-xl-4 col-lg-4 h-100 col-flex">
-          <div class="custom-card card-h-flex bg-pedidos">
-            <div class="card-title"><span>📩</span> Pedido de Documentos</div>
-            <div class="scroll-container">
-              <ul class="lista-links" id="lista-pedidos">
-                <div class="loading">Carregando...</div>
-              </ul>
-            </div>
-          </div>
+<div class="custom-card card-metade bg-avaliacao">
+<div class="card-title"><span>📊</span> Avaliação</div>
+<div class="scroll-container">
+<ul class="lista-links" id="lista-pesquisa">
+<div class="loading">Carregando...</div>
+</ul>
+</div>
+</div>
+</div>
+</div>
 
-          <div class="custom-card card-h-flex bg-suporte" style="flex: 0 0 auto;">
-            <div class="card-title"><span>🛠️</span> Canais de Suporte</div>
-            <a href="https://wa.me/556133290455" target="_blank" class="btn-whatsapp">
-              💬 WhatsApp do PRM
-            </a>
-            <div class="suporte-tel">
-              <strong>Telefone Fixo:</strong> (61) 3329-0400 <span class="text-muted">(Ramal 4213)</span>
-            </div>
-          </div>
+<div class="row g-0 mt-2 flex-shrink-0">
+<div class="col-12">
+<div class="custom-card bg-suporte">
+<div class="card-title" style="margin-bottom: 4px;"><span>🛠️</span> Canais de Suporte</div>
+<div class="d-flex flex-wrap align-items-center gap-3">
+<a href="https://wa.me/556133290455" target="_blank" class="btn-whatsapp">
+💬 WhatsApp do PRM
+</a>
+<div class="suporte-tel m-0">
+<strong>Telefone Fixo:</strong> (61) 3329-0400 <span class="text-muted">(Ramal 4213)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-          <div class="custom-card card-h-flex bg-avaliacao">
-            <div class="card-title"><span>📊</span> Avaliação</div>
-            <div class="scroll-container">
-              <ul class="lista-links" id="lista-pesquisa">
-                <div class="loading">Carregando...</div>
-              </ul>
-            </div>
-          </div>
-        </div>
+<footer class="mini-footer">
+Menu de Ajuda Digital &bull; Sincronizado dinamicamente via Google Sheets
+</footer>
+</div>
 
-      </div>
-    </div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwL9yYyvE_PiNyGoceuygU8iNGgQljGIKu45hIP8X7W3UlKB67vkAhqMdRDMPfkBsD2/exec";
 
-    <footer class="mini-footer">
-      Menu de Ajuda Digital &bull; Sincronizado dinamicamente via Google Sheets
-    </footer>
-  </div>
+async function carregarMenu() {
+try {
+const response = await fetch(API_URL, {
+method: "GET",
+redirect: "follow"
+});
 
-  <script>
-    // NOVA URL DE IMPLANTAÇÃO CORRETA ATUALIZADA:
-    const API_URL = "https://script.google.com/macros/s/AKfycbwL9yYyvE_PiNyGoceuygU8iNGgQljGIKu45hIP8X7W3UlKB67vkAhqMdRDMPfkBsD2/exec";
+if (!response.ok) throw new Error("Erro na requisição à API");
 
-    async function carregarMenu() {
-      try {
-        const response = await fetch(API_URL, { 
-          method: "GET",
-          redirect: "follow" 
-        });
-        
-        if (!response.ok) throw new Error("Erro na requisição à API");
-        
-        const data = await response.json();
+const data = await response.json();
 
-        // 1. Configurar botão mobilização
-        if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
-          const btnMob = document.getElementById('btn-mobilizacao');
-          if (btnMob) {
-            btnMob.href = data.urlMobilizacao;
-            btnMob.style.display = 'inline-block';
-          }
-        }
+if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
+const btnMob = document.getElementById('btn-mobilizacao');
+if (btnMob) {
+btnMob.href = data.urlMobilizacao;
+btnMob.style.display = 'inline-block';
+}
+}
 
-        // Helper para limpar containers
-        const limparEObter = (id) => {
-          const el = document.getElementById(id);
-          if (el) el.innerHTML = '';
-          return el;
-        };
+const limparEObter = (id) => {
+const el = document.getElementById(id);
+if (el) el.innerHTML = '';
+return el;
+};
 
-        // 2. Renderizar Documentos
-        const containerDocs = limparEObter('lista-documentos');
-        if (containerDocs && data.documentos) {
-          data.documentos.forEach(doc => {
-            containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
-          });
-        }
+// Renderizar Documentos
+const containerDocs = limparEObter('lista-documentos');
+if (containerDocs && data.documentos) {
+data.documentos.forEach(doc => {
+containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
+});
+}
 
-        // 3. Renderizar Vídeos
-        const containerVideos = limparEObter('lista-videos');
-        if (containerVideos && data.videos) {
-          data.videos.forEach(vid => {
-            containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span>${vid.text}</span></a></li>`;
-          });
-        }
+// Renderizar Vídeos
+const containerVideos = limparEObter('lista-videos');
+if (containerVideos && data.videos) {
+data.videos.forEach(vid => {
+containerVideos.innerHTML += `<li><a href="${vid.url} " target="_blank"><span class="icon-wrapper"> ▶ </span><span> ${vid.text}</span></a></li>`;
+});
+}
 
-        // 4. Renderizar Links Úteis
-        const containerLinks = limparEObter('lista-links-uteis');
-        if (containerLinks && data.linksUteis) {
-          data.linksUteis.forEach(link => {
-            const textoLink = link.text.trim();
-            if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
-              containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
-            }
-          });
-        }
+// Renderizar Links Úteis
+const containerLinks = limparEObter('lista-links-uteis');
+if (containerLinks && data.linksUteis) {
+data.linksUteis.forEach(link => {
+const textoLink = link.text.trim();
+if (textoLink !== "Links Úteis" && !textoLink.includes("Pedido de Documentos para o PRM")) {
+containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
+}
+});
+}
 
-        // 5. Renderizar Pedido de Documentos
-        const containerPedidos = limparEObter('lista-pedidos');
-        if (containerPedidos && data.pedidosPrm) {
-          data.pedidosPrm.forEach(pedido => {
-            const texto = pedido.text.trim();
-            if (texto === "Pedido de Documentos para o PRM") return;
+// Renderizar Pedido de Documentos
+const containerPedidos = limparEObter('lista-pedidos');
+if (containerPedidos && data.pedidosPrm) {
+data.pedidosPrm.forEach(pedido => {
+const texto = pedido.text.trim();
+if (texto === "Pedido de Documentos para o PRM") return;
 
-            let estiloCustomizado = "";
-            if (texto.toUpperCase().includes("FORMULÁRIO")) {
-              estiloCustomizado = "color: #dc2626; font-weight: 600;";
-            } else if (texto.includes("Planilha de Consulta")) {
-              estiloCustomizado = "color: #2563eb; font-weight: 600;";
-            }
+let estiloCustomizado = "";
+if (texto.toUpperCase().includes("FORMULÁRIO") || texto.includes("Planilha de Consulta de Status em Processos no PRM")) {
+estiloCustomizado = "color: #dc2626; font-weight: 600;";
+}
 
-            if (pedido.url !== "#" && pedido.url !== "") {
-              containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
-            } else {
-              containerPedidos.innerHTML += `<li><span style="font-size: 0.85rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
-            }
-          });
-        }
+if (pedido.url !== "#" && pedido.url !== "") {
+containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
+} else {
+containerPedidos.innerHTML += `<li><span style="font-size: 0.8rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
+}
+});
+}
 
-        // 6. Renderizar Avaliação
-        const containerPesquisa = limparEObter('lista-pesquisa');
-        if (containerPesquisa && data.pesquisa) {
-          data.pesquisa.forEach(item => {
-            if (item.text.trim() !== "") {
-              containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
-            }
-          });
-        }
+// Renderizar Avaliação
+const containerPesquisa = limparEObter('lista-pesquisa');
+if (containerPesquisa && data.pesquisa) {
+data.pesquisa.forEach(item => {
+if (item.text.trim() !== "") {
+containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
+}
+});
+}
 
-      } catch (error) {
-        console.error("Erro ao carregar dados da planilha:", error);
-        document.querySelectorAll('.loading').forEach(el => {
-          el.textContent = "Erro ao carregar dados atualizados.";
-          el.style.color = "#dc2626";
-        });
-      }
-    }
+} catch (error) {
+console.error("Erro ao carregar dados da planilha:", error);
+document.querySelectorAll('.loading').forEach(el => {
+el.textContent = "Erro ao carregar dados atualizados.";
+el.style.color = "#dc2626";
+});
+}
+}
 
-    window.addEventListener('DOMContentLoaded', carregarMenu);
-  </script>
+window.addEventListener('DOMContentLoaded', carregarMenu);
+</script>
 </body>
 </html>
