@@ -10,8 +10,9 @@
   <style>
     html, body {
       height: 100%;
-      background-image: url('PRM11001 Imagem.jpg');
-      background-size: 50%;
+      /* Imagem de fundo direto do seu Google Drive convertida para link direto */
+      background-image: url('https://lh3.googleusercontent.com/d/1TwyGYG0mI8Y7HEGhPLdnGFpQqf5s5jyj');
+      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-color: #f1f5f9;
@@ -25,6 +26,11 @@
       .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
       .grid-principal { height: calc(100vh - 170px); min-height: 0; }
       .col-flex-dupla { display: flex; flex-direction: column; height: 100%; gap: 6px; }
+      
+      /* Alteração de proporção: Vídeos menor (35%) e Links Úteis maior (65%) */
+      .card-videos-menor { height: calc(35% - 3px) !important; min-height: 0; }
+      .card-links-maior { height: calc(65% - 3px) !important; min-height: 0; }
+      
       .card-metade { height: calc(50% - 3px) !important; min-height: 0; }
       .custom-card { height: 100%; }
       .scroll-container { flex-grow: 1; overflow-y: auto; padding-right: 2px; }
@@ -43,12 +49,12 @@
     .btn-mobilizacao { background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; font-weight: 500; font-size: 0.8rem; padding: 4px 10px; border-radius: 5px; text-decoration: none; transition: all 0.2s ease; }
     .btn-mobilizacao:hover { background-color: #b30000; border-color: #b30000; color: white; }
     .custom-card { border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(2px); }
-    .bg-documentos { background-color: rgba(255, 255, 255, 0.4); border-left: 5px solid #3b82f6; }
-    .bg-videos     { background-color: rgba(254, 252, 191, 0.4); border-left: 5px solid #eab308; }
-    .bg-links      { background-color: rgba(240, 253, 244, 0.4); border-left: 5px solid #22c55e; }
-    .bg-pedidos    { background-color: rgba(254, 242, 242, 0.4); border-left: 5px solid #ef4444; }
-    .bg-suporte    { background-color: rgba(247, 254, 231, 0.4); border-left: 5px solid #84cc16; }
-    .bg-avaliacao  { background-color: rgba(250, 245, 255, 0.4); border-left: 5px solid #a855f7; }
+    .bg-documentos { background-color: rgba(255, 255, 255, 0.65); border-left: 5px solid #3b82f6; }
+    .bg-videos     { background-color: rgba(254, 252, 191, 0.65); border-left: 5px solid #eab308; }
+    .bg-links      { background-color: rgba(240, 253, 244, 0.65); border-left: 5px solid #22c55e; }
+    .bg-pedidos    { background-color: rgba(254, 242, 242, 0.65); border-left: 5px solid #ef4444; }
+    .bg-suporte    { background-color: rgba(247, 254, 231, 0.65); border-left: 5px solid #84cc16; }
+    .bg-avaliacao  { background-color: rgba(250, 245, 255, 0.65); border-left: 5px solid #a855f7; }
     .card-title { font-weight: 700; font-size: 0.92rem; color: #1e293b; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .scroll-container::-webkit-scrollbar { width: 4px; }
     .scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -90,15 +96,16 @@
         </div>
       </div>
 
+      <!-- Coluna Central com proporções alteradas manualmente -->
       <div class="col-xl-4 col-lg-4 col-flex-dupla">
-        <div class="custom-card card-metade bg-videos">
+        <div class="custom-card card-videos-menor bg-videos">
           <div class="card-title"><span>🎬</span> Vídeos de Apoio</div>
           <div class="scroll-container">
             <ul class="lista-links" id="lista-videos"><div class="loading">Carregando...</div></ul>
           </div>
         </div>
 
-        <div class="custom-card card-metade bg-links">
+        <div class="custom-card card-links-maior bg-links">
           <div class="card-title"><span>🔗</span> Links Úteis</div>
           <div class="scroll-container">
             <ul class="lista-links" id="lista-links-uteis"><div class="loading">Carregando...</div></ul>
@@ -144,13 +151,14 @@
 </div>
 
 <script>
-  // INSIRA AQUI A SUA URL DE IMPLANTAÇÃO DO GOOGLE WEB APP
   const BASE_API_URL = "https://script.google.com/macros/s/AKfycbwL9yYyvE_PiNyGoceuygU8iNGgQljGIKu45hIP8X7W3UlKB67vkAhqMdRDMPfkBsD2/exec";
   
-  // Força a chamada do GitHub a pedir dados puros (JSON) acrescentando o parâmetro correspondente
-  const FETCH_URL = BASE_API_URL + "?api=true&_=" + new Date().getTime();
+  // URL Anti-Cache com marcador temporal definitivo para o GitHub Pages
+  const FETCH_URL = BASE_API_URL + "?api=true&nocache=" + new Date().getTime();
 
   function renderizarLayout(data) {
+    if (!data) return;
+
     if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
       const btnMob = document.getElementById('btn-mobilizacao');
       if (btnMob) { btnMob.href = data.urlMobilizacao; btnMob.style.display = 'inline-block'; }
@@ -163,12 +171,12 @@
     if (containerDocs && data.documentos) {
       let cont = 0;
       data.documentos.forEach(doc => {
-        if (doc.text.trim() !== "") {
+        if (doc && doc.text && doc.text.trim() !== "") {
           containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
           cont++;
         }
       });
-      if (cont === 0) containerDocs.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none; background: transparent !important;">Nenhum documento disponível</li>`;
+      if (cont === 0) containerDocs.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum documento disponível</li>`;
     }
 
     // Vídeos
@@ -176,26 +184,32 @@
     if (containerVideos && data.videos) {
       let cont = 0;
       data.videos.forEach(vid => {
-        if (vid.text.trim() !== "") {
+        if (vid && vid.text && vid.text.trim() !== "") {
           containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span> ${vid.text}</span></a></li>`;
           cont++;
         }
       });
-      if (cont === 0) containerVideos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none; background: transparent !important;">Nenhum vídeo disponível</li>`;
+      if (cont === 0) containerVideos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum vídeo disponível</li>`;
     }
 
-    // Links Úteis
+    // Links Úteis (Com barreira de proteção total a estruturas nulas)
     const containerLinks = limparEObter('lista-links-uteis');
-    if (containerLinks && data.linksUteis) {
+    if (containerLinks) {
       let linksRenderizados = 0;
-      data.linksUteis.forEach(link => {
-        const textoLink = link.text.trim();
-        if (textoLink !== "" && textoLink.toLowerCase() !== "links úteis" && !textoLink.includes("Pedido de Documentos")) {
-          containerLinks.innerHTML += `<li><a href="${link.url}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
-          linksRenderizados++;
-        }
-      });
-      if (linksRenderizados === 0) containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none; background: transparent !important;">Nenhum link disponível</li>`;
+      if (data.linksUteis && Array.isArray(data.linksUteis)) {
+        data.linksUteis.forEach(link => {
+          if (link && link.text) {
+            const textoLink = link.text.trim();
+            if (textoLink !== "" && textoLink.toLowerCase() !== "links úteis" && !textoLink.includes("Pedido de Documentos")) {
+              containerLinks.innerHTML += `<li><a href="${link.url || '#'}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
+              linksRenderizados++;
+            }
+          }
+        });
+      }
+      if (linksRenderizados === 0) {
+        containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum link útil carregado</li>`;
+      }
     }
 
     // Pedidos
@@ -203,6 +217,7 @@
     if (containerPedidos && data.pedidosPrm) {
       let cont = 0;
       data.pedidosPrm.forEach(pedido => {
+        if (!pedido || !pedido.text) return;
         const texto = pedido.text.trim();
         if (texto === "" || texto === "Pedido de Documentos para o PRM") return;
         let estiloCustomizado = "";
@@ -216,7 +231,7 @@
         }
         cont++;
       });
-      if (cont === 0) containerPedidos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none; background: transparent !important;">Nenhum pedido disponível</li>`;
+      if (cont === 0) containerPedidos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum pedido disponível</li>`;
     }
 
     // Avaliação
@@ -224,40 +239,37 @@
     if (containerPesquisa && data.pesquisa) {
       let cont = 0;
       data.pesquisa.forEach(item => {
-        if (item.text.trim() !== "") {
+        if (item && item.text && item.text.trim() !== "") {
           containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
           cont++;
         }
       });
-      if (cont === 0) containerPesquisa.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none; background: transparent !important;">Nenhuma avaliação disponível</li>`;
+      if (cont === 0) containerPesquisa.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhuma avaliação disponível</li>`;
     }
   }
 
   async function iniciarCarregamento() {
-    // Cenário A: Se estiver rodando dentro do ambiente Web App do Google Apps Script
-    // Ele consegue ler os dados injetados diretamente na renderização inicial do servidor
+    // Tentativa em ambiente interno Google Apps Script
     try {
       /* <?if (typeof dadosIniciais !== 'undefined') { ?> */
       const dadosLocais = JSON.parse('<?= dadosIniciais ?>');
       renderizarLayout(dadosLocais);
       return;
       /* <? } ?> */
-    } catch(e) {
-      // Ignora erro e tenta o carregamento via API externa (Cenário B)
-    }
+    } catch(e) {}
 
-    // Cenário B: Se estiver rodando fora (GitHub Pages ou localmente no PC)
+    // Execução externa (GitHub Pages)
     try {
       const response = await fetch(FETCH_URL, { method: "GET", redirect: "follow" });
-      if (!response.ok) throw new Error("Erro na requisição externa");
+      if (!response.ok) throw new Error("Erro na rede.");
       const data = await response.json();
       renderizarLayout(data);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-      document.querySelectorAll('.loading').forEach(el => {
-        el.textContent = "Erro ao carregar os dados.";
-        el.style.color = "#dc2626";
-      });
+      console.error("Erro geral na busca de dados:", error);
+      const containerLinks = document.getElementById('lista-links-uteis');
+      if (containerLinks) {
+        containerLinks.innerHTML = `<li class="text-danger text-center" style="font-size: 0.8rem; list-style: none;">Erro ao sincronizar com a planilha.</li>`;
+      }
     }
   }
 
