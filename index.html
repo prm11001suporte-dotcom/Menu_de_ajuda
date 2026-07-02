@@ -10,9 +10,8 @@
   <style>
     html, body {
       height: 100%;
-      /* Imagem de fundo direto do seu Google Drive convertida para link direto */
       background-image: url('https://lh3.googleusercontent.com/d/1TwyGYG0mI8Y7HEGhPLdnGFpQqf5s5jyj');
-      background-size: 50%;
+      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       background-color: #f1f5f9;
@@ -27,7 +26,6 @@
       .grid-principal { height: calc(100vh - 170px); min-height: 0; }
       .col-flex-dupla { display: flex; flex-direction: column; height: 100%; gap: 6px; }
       
-      /* Alteração de proporção: Vídeos menor (35%) e Links Úteis maior (65%) */
       .card-videos-menor { height: calc(35% - 3px) !important; min-height: 0; }
       .card-links-maior { height: calc(65% - 3px) !important; min-height: 0; }
       
@@ -96,7 +94,6 @@
         </div>
       </div>
 
-      <!-- Coluna Central com proporções alteradas manualmente -->
       <div class="col-xl-4 col-lg-4 col-flex-dupla">
         <div class="custom-card card-videos-menor bg-videos">
           <div class="card-title"><span>🎬</span> Vídeos de Apoio</div>
@@ -151,9 +148,8 @@
 </div>
 
 <script>
+  // URL da API atualizada do seu script
   const BASE_API_URL = "https://script.google.com/macros/s/AKfycbwBrlEorwKTWLtSg68EdSh7CxvUu78HgJp8hFY_BaLIpHfhw3ASaYTey8i2gHjpYlsAHw/exec";
-  
-  // URL Anti-Cache com marcador temporal definitivo para o GitHub Pages
   const FETCH_URL = BASE_API_URL + "?api=true&nocache=" + new Date().getTime();
 
   function renderizarLayout(data) {
@@ -166,90 +162,100 @@
 
     const limparEObter = (id) => { const el = document.getElementById(id); if (el) el.innerHTML = ''; return el; };
 
-    // Documentos
+    // 1. Documentos
     const containerDocs = limparEObter('lista-documentos');
     if (containerDocs && data.documentos) {
-      let cont = 0;
-      data.documentos.forEach(doc => {
-        if (doc && doc.text && doc.text.trim() !== "") {
-          containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
-          cont++;
-        }
-      });
-      if (cont === 0) containerDocs.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum documento disponível</li>`;
-    }
-
-    // Vídeos
-    const containerVideos = limparEObter('lista-videos');
-    if (containerVideos && data.videos) {
-      let cont = 0;
-      data.videos.forEach(vid => {
-        if (vid && vid.text && vid.text.trim() !== "") {
-          containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span> ${vid.text}</span></a></li>`;
-          cont++;
-        }
-      });
-      if (cont === 0) containerVideos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum vídeo disponível</li>`;
-    }
-
-    // Links Úteis (Com barreira de proteção total a estruturas nulas)
-    const containerLinks = limparEObter('lista-links-uteis');
-    if (containerLinks) {
-      let linksRenderizados = 0;
-      if (data.linksUteis && Array.isArray(data.linksUteis)) {
-        data.linksUteis.forEach(link => {
-          if (link && link.text) {
-            const textoLink = link.text.trim();
-            if (textoLink !== "" && textoLink.toLowerCase() !== "links úteis" && !textoLink.includes("Pedido de Documentos")) {
-              containerLinks.innerHTML += `<li><a href="${link.url || '#'}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
-              linksRenderizados++;
-            }
+      try {
+        let cont = 0;
+        data.documentos.forEach(doc => {
+          if (doc && doc.text && doc.text.trim() !== "") {
+            containerDocs.innerHTML += `<li><a href="${doc.url}" target="_blank"><span class="icon-wrapper">📄</span><span>${doc.text}</span></a></li>`;
+            cont++;
           }
         });
-      }
-      if (linksRenderizados === 0) {
-        containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum link útil carregado</li>`;
+        if (cont === 0) containerDocs.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum documento disponível</li>`;
+      } catch(e) { console.error("Erro nos documentos:", e); }
+    }
+
+    // 2. Vídeos
+    const containerVideos = limparEObter('lista-videos');
+    if (containerVideos && data.videos) {
+      try {
+        let cont = 0;
+        data.videos.forEach(vid => {
+          if (vid && vid.text && vid.text.trim() !== "") {
+            containerVideos.innerHTML += `<li><a href="${vid.url}" target="_blank"><span class="icon-wrapper"> ▶ </span><span> ${vid.text}</span></a></li>`;
+            cont++;
+          }
+        });
+        if (cont === 0) containerVideos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum vídeo disponível</li>`;
+      } catch(e) { console.error("Erro nos vídeos:", e); }
+    }
+
+    // 3. Links Úteis (Blindado contra quebras estruturais)
+    const containerLinks = limparEObter('lista-links-uteis');
+    if (containerLinks) {
+      try {
+        let linksRenderizados = 0;
+        if (data.linksUteis && Array.isArray(data.linksUteis)) {
+          data.linksUteis.forEach(link => {
+            if (link && link.text) {
+              const textoLink = link.text.trim();
+              if (textoLink !== "" && textoLink.toLowerCase() !== "links úteis" && !textoLink.includes("Pedido de Documentos")) {
+                containerLinks.innerHTML += `<li><a href="${link.url || '#'}" target="_blank"><span class="icon-wrapper">🖥️</span><span>${link.text}</span></a></li>`;
+                linksRenderizados++;
+              }
+            }
+          });
+        }
+        if (linksRenderizados === 0) containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum link útil carregado</li>`;
+      } catch(e) { 
+        console.error("Erro nos links úteis:", e);
+        containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Erro ao processar dados dos links úteis</li>`;
       }
     }
 
-    // Pedidos
+    // 4. Pedidos
     const containerPedidos = limparEObter('lista-pedidos');
     if (containerPedidos && data.pedidosPrm) {
-      let cont = 0;
-      data.pedidosPrm.forEach(pedido => {
-        if (!pedido || !pedido.text) return;
-        const texto = pedido.text.trim();
-        if (texto === "" || texto === "Pedido de Documentos para o PRM") return;
-        let estiloCustomizado = "";
-        if (texto.toUpperCase().includes("FORMULÁRIO") || texto.includes("Planilha de Consulta de Status em Processos no PRM")) {
-          estiloCustomizado = "color: #dc2626; font-weight: 600;";
-        }
-        if (pedido.url !== "#" && pedido.url !== "") {
-          containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
-        } else {
-          containerPedidos.innerHTML += `<li><span style="font-size: 0.8rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
-        }
-        cont++;
-      });
-      if (cont === 0) containerPedidos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum pedido disponível</li>`;
+      try {
+        let cont = 0;
+        data.pedidosPrm.forEach(pedido => {
+          if (!pedido || !pedido.text) return;
+          const texto = pedido.text.trim();
+          if (texto === "" || texto === "Pedido de Documentos para o PRM") return;
+          let estiloCustomizado = "";
+          if (texto.toUpperCase().includes("FORMULÁRIO") || texto.includes("Planilha de Consulta de Status em Processos no PRM")) {
+            estiloCustomizado = "color: #dc2626; font-weight: 600;";
+          }
+          if (pedido.url !== "#" && pedido.url !== "") {
+            containerPedidos.innerHTML += `<li><a href="${pedido.url}" target="_blank" style="${estiloCustomizado}"><span class="icon-wrapper">🔗</span><span>${texto}</span></a></li>`;
+          } else {
+            containerPedidos.innerHTML += `<li><span style="font-size: 0.8rem; padding-left: 2px; display: inline-block; ${estiloCustomizado}">${texto}</span></li>`;
+          }
+          cont++;
+        });
+        if (cont === 0) containerPedidos.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum pedido disponível</li>`;
+      } catch(e) { console.error("Erro nos pedidos:", e); }
     }
 
-    // Avaliação
+    // 5. Avaliação
     const containerPesquisa = limparEObter('lista-pesquisa');
     if (containerPesquisa && data.pesquisa) {
-      let cont = 0;
-      data.pesquisa.forEach(item => {
-        if (item && item.text && item.text.trim() !== "") {
-          containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
-          cont++;
-        }
-      });
-      if (cont === 0) containerPesquisa.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhuma avaliação disponível</li>`;
+      try {
+        let cont = 0;
+        data.pesquisa.forEach(item => {
+          if (item && item.text && item.text.trim() !== "") {
+            containerPesquisa.innerHTML += `<li><a href="${item.url}" target="_blank"><span class="icon-wrapper">📋</span><span>${item.text}</span></a></li>`;
+            cont++;
+          }
+        });
+        if (cont === 0) containerPesquisa.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhuma avaliação disponível</li>`;
+      } catch(e) { console.error("Erro na avaliação:", e); }
     }
   }
 
   async function iniciarCarregamento() {
-    // Tentativa em ambiente interno Google Apps Script
     try {
       /* <?if (typeof dadosIniciais !== 'undefined') { ?> */
       const dadosLocais = JSON.parse('<?= dadosIniciais ?>');
@@ -258,7 +264,6 @@
       /* <? } ?> */
     } catch(e) {}
 
-    // Execução externa (GitHub Pages)
     try {
       const response = await fetch(FETCH_URL, { method: "GET", redirect: "follow" });
       if (!response.ok) throw new Error("Erro na rede.");
@@ -266,10 +271,12 @@
       renderizarLayout(data);
     } catch (error) {
       console.error("Erro geral na busca de dados:", error);
-      const containerLinks = document.getElementById('lista-links-uteis');
-      if (containerLinks) {
-        containerLinks.innerHTML = `<li class="text-danger text-center" style="font-size: 0.8rem; list-style: none;">Erro ao sincronizar com a planilha.</li>`;
-      }
+      // Fallback em caso de erro de rede real ou CORS
+      const ids = ['lista-documentos', 'lista-videos', 'lista-links-uteis', 'lista-pedidos', 'lista-pesquisa'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<li class="text-danger text-center" style="font-size: 0.8rem; list-style: none;">Erro ao sincronizar dados.</li>`;
+      });
     }
   }
 
