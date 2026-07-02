@@ -25,10 +25,10 @@
       .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; }
       .grid-principal { height: calc(100vh - 170px); min-height: 0; }
       .col-flex-dupla { display: flex; flex-direction: column; height: 100%; gap: 6px; }
-      
+
       .card-videos-menor { height: calc(35% - 3px) !important; min-height: 0; }
       .card-links-maior { height: calc(65% - 3px) !important; min-height: 0; }
-      
+
       .card-metade { height: calc(50% - 3px) !important; min-height: 0; }
       .custom-card { height: 100%; }
       .scroll-container { flex-grow: 1; overflow-y: auto; padding-right: 2px; }
@@ -148,7 +148,8 @@
 </div>
 
 <script>
-  // URL da API atualizada do seu script
+  // URL da implantação (/exec) do Apps Script.
+  // Atualize aqui sempre que criar uma nova implantação no Apps Script.
   const BASE_API_URL = "https://script.google.com/macros/s/AKfycbxNiVNd7S0ewIBuHxbT-mIiqdyrQAZrjoTE4d8wYsbM24hdI6jLcYSRizd6L2yYHLBGNg/exec";
   const FETCH_URL = BASE_API_URL + "?api=true&nocache=" + new Date().getTime();
 
@@ -209,7 +210,7 @@
           });
         }
         if (linksRenderizados === 0) containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Nenhum link útil carregado</li>`;
-      } catch(e) { 
+      } catch(e) {
         console.error("Erro nos links úteis:", e);
         containerLinks.innerHTML = `<li class="text-muted text-center" style="font-size: 0.8rem; list-style: none;">Erro ao processar dados dos links úteis</li>`;
       }
@@ -255,7 +256,37 @@
     }
   }
 
+  // Carrega os dados via JSONP (tag <script>), que não é sujeita a CORS,
+  // diferente do fetch() — necessário porque o redirect interno do
+  // Apps Script (script.google.com -> script.googleusercontent.com)
+  // não envia headers CORS confiáveis para fetch() entre domínios.
+  function carregarViaJSONP(url) {
+    return new Promise((resolve, reject) => {
+      const callbackName = "jsonpCallback_" + Date.now();
+      const script = document.createElement("script");
+
+      const limpar = () => {
+        delete window[callbackName];
+        script.remove();
+      };
+
+      window[callbackName] = function(data) {
+        resolve(data);
+        limpar();
+      };
+
+      script.onerror = () => {
+        reject(new Error("Erro ao carregar JSONP"));
+        limpar();
+      };
+
+      script.src = url + "&callback=" + callbackName;
+      document.body.appendChild(script);
+    });
+  }
+
   async function iniciarCarregamento() {
+    // Tentativa em ambiente interno Google Apps Script (dados injetados no template)
     try {
       /* <?if (typeof dadosIniciais !== 'undefined') { ?> */
       const dadosLocais = JSON.parse('<?= dadosIniciais ?>');
@@ -264,14 +295,12 @@
       /* <? } ?> */
     } catch(e) {}
 
+    // Execução externa (GitHub Pages) via JSONP
     try {
-      const response = await fetch(FETCH_URL, { method: "GET", redirect: "follow" });
-      if (!response.ok) throw new Error("Erro na rede.");
-      const data = await response.json();
+      const data = await carregarViaJSONP(FETCH_URL);
       renderizarLayout(data);
     } catch (error) {
       console.error("Erro geral na busca de dados:", error);
-      // Fallback em caso de erro de rede real ou CORS
       const ids = ['lista-documentos', 'lista-videos', 'lista-links-uteis', 'lista-pedidos', 'lista-pesquisa'];
       ids.forEach(id => {
         const el = document.getElementById(id);
