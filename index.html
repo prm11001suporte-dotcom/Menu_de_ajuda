@@ -148,7 +148,7 @@
   const BASE_API_URL = "https://script.google.com/macros/s/AKfycbwL9yYyvE_PiNyGoceuygU8iNGgQljGIKu45hIP8X7W3UlKB67vkAhqMdRDMPfkBsD2/exec";
   
   // Força a chamada do GitHub a pedir dados puros (JSON) acrescentando o parâmetro correspondente
-  const FETCH_URL = BASE_API_URL + "?api=true";
+  const FETCH_URL = BASE_API_URL + "?api=true&_=" + new Date().getTime();
 
   function renderizarLayout(data) {
     if (data.urlMobilizacao && data.urlMobilizacao !== "#") {
